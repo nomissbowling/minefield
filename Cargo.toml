@@ -1,0 +1,21 @@
+[package]
+name = "minefield"
+version = "0.1.0" # change with html_root_url in lib.rs
+edition = "2021"
+authors = ["nomissbowling <nomissbowling@yahoo.co.jp>"]
+
+description = "minefield abstract layer for mine sweeper by Rust"
+keywords = ["mine", "stdout", "stdin", "console"]
+categories = ["development-tools", "game-development", "command-line-utilities", "command-line-interface"]
+license = "MIT"
+
+documentation = "https://docs.rs/minefield/"
+homepage = "https://crates.io/crates/minefield"
+repository = "https://github.com/nomissbowling/minefield"
+
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = { version = "0.8.5" }
