@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/minefield/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/minefield/0.1.1")]
 //! minefield abstract layer for mine sweeper by Rust
 //!
 
