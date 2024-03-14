@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/minefield/3.1.0")]
+#![doc(html_root_url = "https://docs.rs/minefield/3.2.0")]
 //! minefield abstract layer for mine sweeper by Rust
 //!
 
@@ -8,7 +8,23 @@ use std::time;
 use rand;
 use rand::prelude::SliceRandom;
 
-use mvc_rs::View as MVCView;
+use mvc_rs::View;
+
+/// Packet
+pub struct Packet<'a> {
+  /// x
+  pub x: u16,
+  /// y
+  pub y: u16,
+  /// style
+  pub st: u16,
+  /// bgc abstract id
+  pub bgc: u16,
+  /// fgc abstract id
+  pub fgc: u16,
+  /// msg
+  pub msg: &'a String
+}
 
 /// MineField
 pub struct MineField {
@@ -46,14 +62,14 @@ impl MineField {
   }
 
   /// refresh
-  pub fn refresh<T>(&self, g: &mut impl MVCView<T>) ->
+  pub fn refresh<T>(&self, g: &mut impl View<T>) ->
     Result<(), Box<dyn Error>> {
     for (r, v) in self.f.iter().enumerate() {
       for (c, u) in v.iter().enumerate() {
         let ur = r as u16;
         let uc = c as u16;
         let (s, bgc, fgc) = self.c(ur, uc, *u)?;
-        g.wr(uc, ur, 3, bgc, fgc, &s)?;
+        g.wr(Packet{x: uc, y: ur, st: 3, bgc, fgc, msg: &s})?;
       }
     }
     Ok(())
@@ -88,7 +104,7 @@ impl MineField {
   pub fn is_blink(&self) -> bool { self.t < self.b / 2 }
 
   /// tick and control blink cursor
-  pub fn tick<T>(&mut self, g: &mut impl MVCView<T>) ->
+  pub fn tick<T>(&mut self, g: &mut impl View<T>) ->
     Result<(), Box<dyn Error>> {
     self.t += 1;
     if self.t == self.b / 2 { self.refresh(g)?; }
@@ -97,7 +113,7 @@ impl MineField {
   }
 
   /// reset tick
-  pub fn reset_tick<T>(&mut self, g: &mut impl MVCView<T>) ->
+  pub fn reset_tick<T>(&mut self, g: &mut impl View<T>) ->
     Result<(), Box<dyn Error>> {
     self.t = 0;
     self.refresh(g)?;
@@ -182,7 +198,7 @@ impl MineField {
   pub fn is_end(&self) -> bool { self.s >= 0x4000 }
 
   /// ending
-  pub fn ending<T>(&mut self, g: &mut impl MVCView<T>) ->
+  pub fn ending<T>(&mut self, g: &mut impl View<T>) ->
     Result<(), Box<dyn Error>> {
     for v in &mut self.f { for u in v { Self::set_o(u, true); } } // all open
     self.refresh(g)?;
