@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/minefield/0.1.1")]
+#![doc(html_root_url = "https://docs.rs/minefield/3.1.0")]
 //! minefield abstract layer for mine sweeper by Rust
 //!
 
@@ -8,16 +8,7 @@ use std::time;
 use rand;
 use rand::prelude::SliceRandom;
 
-/// trait WR
-pub trait WR<T> {
-  /// wr
-  fn wr(&mut self, x: u16, y: u16, st: u16,
-    bgc: u16, fgc: u16, msg: &String) -> Result<(), Box<dyn Error>>;
-  /// reg
-  fn reg(&mut self, c: Vec<T>) -> ();
-  /// col
-  fn col(&self, n: u16) -> T;
-}
+use mvc_rs::View as MVCView;
 
 /// MineField
 pub struct MineField {
@@ -55,7 +46,8 @@ impl MineField {
   }
 
   /// refresh
-  pub fn refresh<T>(&self, g: &mut impl WR<T>) -> Result<(), Box<dyn Error>> {
+  pub fn refresh<T>(&self, g: &mut impl MVCView<T>) ->
+    Result<(), Box<dyn Error>> {
     for (r, v) in self.f.iter().enumerate() {
       for (c, u) in v.iter().enumerate() {
         let ur = r as u16;
@@ -96,7 +88,8 @@ impl MineField {
   pub fn is_blink(&self) -> bool { self.t < self.b / 2 }
 
   /// tick and control blink cursor
-  pub fn tick<T>(&mut self, g: &mut impl WR<T>) -> Result<(), Box<dyn Error>> {
+  pub fn tick<T>(&mut self, g: &mut impl MVCView<T>) ->
+    Result<(), Box<dyn Error>> {
     self.t += 1;
     if self.t == self.b / 2 { self.refresh(g)?; }
     else if self.t >= self.b { self.reset_tick(g)?; }
@@ -104,7 +97,7 @@ impl MineField {
   }
 
   /// reset tick
-  pub fn reset_tick<T>(&mut self, g: &mut impl WR<T>) ->
+  pub fn reset_tick<T>(&mut self, g: &mut impl MVCView<T>) ->
     Result<(), Box<dyn Error>> {
     self.t = 0;
     self.refresh(g)?;
@@ -189,7 +182,7 @@ impl MineField {
   pub fn is_end(&self) -> bool { self.s >= 0x4000 }
 
   /// ending
-  pub fn ending<T>(&mut self, g: &mut impl WR<T>) ->
+  pub fn ending<T>(&mut self, g: &mut impl MVCView<T>) ->
     Result<(), Box<dyn Error>> {
     for v in &mut self.f { for u in v { Self::set_o(u, true); } } // all open
     self.refresh(g)?;
