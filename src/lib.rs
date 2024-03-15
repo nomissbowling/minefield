@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/minefield/3.2.1")]
+#![doc(html_root_url = "https://docs.rs/minefield/3.3.0")]
 //! minefield abstract layer for mine sweeper by Rust
 //!
 
@@ -28,17 +28,17 @@ pub struct Packet<'a> {
 
 /// trait TPacket for Packet
 impl TPacket for Packet<'_> {
-  /// as_str
-  fn as_str(&self) -> &str {
-    self.msg.as_str()
-  }
   /// to_vec
   fn to_vec(&self) -> Vec<u16> {
     vec![self.x, self.y, self.st, self.bgc, self.fgc]
   }
-  /// flat
-  fn flat(&self) -> Vec<u8> {
-    self.msg.as_bytes().to_vec()
+  /// as_bytes
+  fn as_bytes(&self) -> &[u8] {
+    self.msg.as_bytes()
+  }
+  /// as_str
+  fn as_str(&self) -> &str {
+    self.msg.as_str()
   }
 }
 
