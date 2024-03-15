@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/minefield/3.2.0")]
+#![doc(html_root_url = "https://docs.rs/minefield/3.2.1")]
 //! minefield abstract layer for mine sweeper by Rust
 //!
 
@@ -8,7 +8,7 @@ use std::time;
 use rand;
 use rand::prelude::SliceRandom;
 
-use mvc_rs::View;
+use mvc_rs::{TPacket, TView};
 
 /// Packet
 pub struct Packet<'a> {
@@ -24,6 +24,22 @@ pub struct Packet<'a> {
   pub fgc: u16,
   /// msg
   pub msg: &'a String
+}
+
+/// trait TPacket for Packet
+impl TPacket for Packet<'_> {
+  /// as_str
+  fn as_str(&self) -> &str {
+    self.msg.as_str()
+  }
+  /// to_vec
+  fn to_vec(&self) -> Vec<u16> {
+    vec![self.x, self.y, self.st, self.bgc, self.fgc]
+  }
+  /// flat
+  fn flat(&self) -> Vec<u8> {
+    self.msg.as_bytes().to_vec()
+  }
 }
 
 /// MineField
@@ -62,7 +78,7 @@ impl MineField {
   }
 
   /// refresh
-  pub fn refresh<T>(&self, g: &mut impl View<T>) ->
+  pub fn refresh<T>(&self, g: &mut impl TView<T>) ->
     Result<(), Box<dyn Error>> {
     for (r, v) in self.f.iter().enumerate() {
       for (c, u) in v.iter().enumerate() {
@@ -104,7 +120,7 @@ impl MineField {
   pub fn is_blink(&self) -> bool { self.t < self.b / 2 }
 
   /// tick and control blink cursor
-  pub fn tick<T>(&mut self, g: &mut impl View<T>) ->
+  pub fn tick<T>(&mut self, g: &mut impl TView<T>) ->
     Result<(), Box<dyn Error>> {
     self.t += 1;
     if self.t == self.b / 2 { self.refresh(g)?; }
@@ -113,7 +129,7 @@ impl MineField {
   }
 
   /// reset tick
-  pub fn reset_tick<T>(&mut self, g: &mut impl View<T>) ->
+  pub fn reset_tick<T>(&mut self, g: &mut impl TView<T>) ->
     Result<(), Box<dyn Error>> {
     self.t = 0;
     self.refresh(g)?;
@@ -198,7 +214,7 @@ impl MineField {
   pub fn is_end(&self) -> bool { self.s >= 0x4000 }
 
   /// ending
-  pub fn ending<T>(&mut self, g: &mut impl View<T>) ->
+  pub fn ending<T>(&mut self, g: &mut impl TView<T>) ->
     Result<(), Box<dyn Error>> {
     for v in &mut self.f { for u in v { Self::set_o(u, true); } } // all open
     self.refresh(g)?;
